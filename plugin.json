@@ -1,0 +1,21 @@
+{
+  "id": "neodex.reseau",
+  "name": "Réseau",
+  "version": "1.0.0",
+  "author": "NDesumeur",
+  "description": "Teste ta connexion (box, Internet, DNS, ping LoL EUW) et retrouve les mots de passe des réseaux Wi-Fi enregistrés sur ton PC.",
+  "icon": "icon.png",
+  "entry": "index.js",
+  "main": "main.js",
+  "view": "reseau",
+  "neobase": ">=4.0.0",
+  "type": "app",
+  "category": "Système",
+  "mobile": false,
+  "system": false,
+  "dependencies": {},
+  "sdk": "2.1.0",
+  "permissions": [
+    "system:main"
+  ]
+}
