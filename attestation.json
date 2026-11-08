@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.reseau",
   "repo": "NDesumeur/neodex-plugin-reseau",
-  "version": "1.0.1",
-  "sha256": "f872668776a7a13dd6eea0969bb244e120f22be3109130a75783fa3af0270bf1",
-  "approvedAt": "2026-11-06T21:35:48.022Z",
+  "version": "1.0.2",
+  "sha256": "a7447b49952f97d96c81850c97077a55bec53fcd14a0c0e68124f1b890ad3a65",
+  "approvedAt": "2026-11-08T12:10:50.012Z",
   "neobase": ">=4.0.0",
-  "signature": "8dCzkXroJe+IjdUAWqQc/mQj2X/JX2r6citfXx/ca/jZxdejMYUpk+4TjWZFis879PXboUn/lZgcU3WukBPRBg=="
+  "signature": "KT7SIMlRk+ysPgiI32IMVl8hRIzJgm74D9x8Yaja9lIPsBagf4NvQa67E7K3d4hejsaKsDg/UsnHGdSpwPFYAg=="
 }
