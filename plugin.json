@@ -1,7 +1,7 @@
 {
   "id": "neodex.reseau",
   "name": "Réseau",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "NDesumeur",
   "description": "Teste ta connexion en une quinzaine de secondes : ping, gigue et pertes vers ta box, vers Internet et vers les serveurs de League of Legends EUW, vitesse du DNS, et une phrase qui dit d'où vient le problème (box, opérateur, DNS, Wi-Fi lent). Liste aussi les réseaux Wi-Fi enregistrés sur ton PC, avec leur mot de passe à afficher ou copier.",
   "icon": "icon.png",
