@@ -45,5 +45,15 @@
  " Ping vers ": " Ping to ",
  "Teste ta connexion en une quinzaine de secondes : ping, gigue et pertes vers ta box, vers Internet et vers un serveur de jeu, vitesse du DNS, et une phrase qui dit d'où vient le problème (box, opérateur, DNS, Wi-Fi lent). Liste aussi les réseaux Wi-Fi enregistrés sur ton PC, avec leur mot de passe à afficher ou copier. Le serveur de jeu se choisit dans une liste : Riot EUW (League of Legends, Valorant), Steam (Paris, Francfort, Amsterdam), Fortnite Europe ou Battle.net Europe ; ton choix est gardé. L'appli s'adapte à la taille de l'écran (cartes et Wi-Fi sur plusieurs colonnes en grand écran).": "Tests your connection in about fifteen seconds: ping, jitter and loss to your router, to the internet and to a game server, DNS speed, and a sentence saying where the problem comes from (router, provider, DNS, slow Wi-Fi). Also lists the Wi-Fi networks saved on your PC, with their password to show or copy. The game server is picked from a list: Riot EUW (League of Legends, Valorant), Steam (Paris, Frankfurt, Amsterdam), Fortnite Europe or Battle.net Europe; your choice is kept. The app adapts to the screen size (cards and Wi-Fi on several columns on large screens).",
  " (l’entrée du réseau de Riot ; le serveur de jeu ajoute quelques ms).": " (the entry of Riot's network; the game server adds a few ms).",
- " : attends-toi à du lag.": ": expect lag."
+ " : attends-toi à du lag.": ": expect lag.",
+ "Connexion instable vers": "Unstable connection to",
+ ": attends-toi à du lag.": ": expect lag.",
+ "Ping vers": "Ping to",
+ "(l’entrée du réseau de Riot ; le serveur de jeu ajoute quelques ms).": "(the entry of Riot's network; the game server adds a few ms).",
+ "Riot · EUW": "Riot · EUW",
+ "Steam · Paris": "Steam · Paris",
+ "Steam · Francfort": "Steam · Frankfurt",
+ "Steam · Amsterdam": "Steam · Amsterdam",
+ "Fortnite · Europe": "Fortnite · Europe",
+ "serveur de connexion de Blizzard": "Blizzard login server"
 }
