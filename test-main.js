@@ -10,5 +10,7 @@ m({ readDoc: n => doc[n], writeDoc: (n, d) => { doc[n] = d; }, electron: {}, ipc
   if (list[0]) { const k = await h.get('wifi:key')(list[0].name); console.log('clé lue :', typeof k, k.length > 0); }
   let t = Date.now(); console.log(JSON.stringify(await h.get('net:test')()), Date.now() - t, 'ms');
   t = Date.now(); console.log(JSON.stringify(await h.get('net:test')()), Date.now() - t, 'ms (chemin en cache)');
+  for (const g of ['steam-par', 'fortnite']) { const r = await h.get('net:test')(g); assert.equal(r.gameId, g); assert.ok(r.gameIp, g); console.log(g, r.gameIp, r.game && r.game.avg, 'ms'); }
+  assert.equal(doc.game.id, 'fortnite'); assert.equal((await h.get('net:games')()).pick, 'fortnite');
   console.log('ok');
 })().catch(e => { console.error(e); process.exit(1); });
