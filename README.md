@@ -4,6 +4,10 @@ Ta connexion en un coup d'œil : un test qui mesure ta box, Internet, le DNS et 
 
 *English version: [README.en.md](README.en.md)*
 
+## Surveillance des coupures (nouveau en 1.2.0)
+
+Coche « Surveiller » : NeoDex vérifie ta box et Internet toutes les 10 s et note chaque coupure avec sa cause. Bilan, frise, et un relevé daté à copier ou enregistrer en CSV pour ton opérateur.
+
 ## Tester ma connexion
 
 Le test dure une quinzaine de secondes. Il mesure :
@@ -42,3 +46,12 @@ Rien n'est synchronisé et rien n'est gardé : les mesures et les mots de passe 
 Dans NeoDex : **NeoStore → À découvrir → Réseau → Installer**.
 
 Développer un plugin : voir le [SDK NeoDex](https://github.com/NDesumeur/neodex-sdk).
+
+## La surveillance des coupures (1.2.0)
+
+Coche **Surveiller** : tant que NeoDex est ouvert (même réduit), Réseau vérifie toutes les 10 s ta box et Internet (un seul ping vers chacun, presque rien sur la connexion).
+
+- Une coupure est notée après **20 s** sans réponse, avec sa **cause** : la box ne répondait pas (box, câble ou Wi-Fi de ce PC) ou Internet coupé alors que la box répondait (côté opérateur).
+- Le **bilan** sur 24 h, 7, 30 ou 90 jours : nombre de coupures, durée coupée, part du temps où la connexion marchait, temps surveillé. Une **frise** montre les moments surveillés et les coupures.
+- **COPIER LE RELEVÉ** donne un texte daté prêt à coller dans un message à ton opérateur ; **CSV** l’enregistre en tableur.
+- Le PC en veille ou NeoDex fermé ne comptent pas comme des coupures, et les 30 s après un réveil sont ignorées. L’historique reste sur ce PC (90 jours), il n’est pas synchronisé.

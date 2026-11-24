@@ -1,9 +1,9 @@
 {
   "id": "neodex.reseau",
   "name": "Réseau",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "NDesumeur",
-  "description": "Teste ta connexion en une quinzaine de secondes : ping, gigue et pertes vers ta box, vers Internet et vers un serveur de jeu, vitesse du DNS, et une phrase qui dit d'où vient le problème (box, opérateur, DNS, Wi-Fi lent). Liste aussi les réseaux Wi-Fi enregistrés sur ton PC, avec leur mot de passe à afficher ou copier. Le serveur de jeu se choisit dans une liste : Riot EUW (League of Legends, Valorant), Steam (Paris, Francfort, Amsterdam), Fortnite Europe ou Battle.net Europe ; ton choix est gardé. L'appli s'adapte à la taille de l'écran (cartes et Wi-Fi sur plusieurs colonnes en grand écran).",
+  "description": "Teste ta connexion en une quinzaine de secondes : ping, gigue et pertes vers ta box, vers Internet et vers un serveur de jeu, vitesse du DNS, et une phrase qui dit d'où vient le problème (box, opérateur, DNS, Wi-Fi lent). Liste aussi les réseaux Wi-Fi enregistrés sur ton PC, avec leur mot de passe à afficher ou copier. Le serveur de jeu se choisit dans une liste : Riot EUW (League of Legends, Valorant), Steam (Paris, Francfort, Amsterdam), Fortnite Europe ou Battle.net Europe ; ton choix est gardé. L'appli s'adapte à la taille de l'écran (cartes et Wi-Fi sur plusieurs colonnes en grand écran). Surveille aussi les coupures en continu (toutes les 10 s) et en garde un relevé daté, avec la cause (box ou opérateur), à copier ou enregistrer en CSV pour ton opérateur.",
   "icon": "icon.png",
   "entry": "index.js",
   "main": "main.js",
@@ -11,7 +11,9 @@
   "neobase": ">=4.0.0",
   "type": "app",
   "category": "Système",
-  "compatibility": ["windows"],
+  "compatibility": [
+    "windows"
+  ],
   "syncMode": "aucune",
   "syncInfo": "Rien n'est synchronisé.",
   "mobile": false,

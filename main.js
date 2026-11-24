@@ -63,11 +63,67 @@ function route(ip) {
   });
 }
 
+// la surveillance des coupures : toutes les 10 s, un ping vers la box et un vers Internet (1.1.1.1, sinon 8.8.8.8).
+// Une coupure n'est notée qu'après 2 vérifications ratées de suite (20 s) ; un trou de plus d'une minute entre deux vérifications (PC en veille, NeoDex fermé)
+// coupe la période surveillée au lieu de compter comme une coupure, et les 30 s après un réveil sont ignorées (le Wi-Fi se reconnecte).
+const CUT_EVERY = 10000, CUT_GAP = 60000, CUT_WAKE = 30000, CUT_KEEP = 90 * 864e5;
+const cutEmpty = () => ({ on: false, spans: [], cuts: [], open: null, fails: 0, last: 0, wake: 0, state: '' });
+// une vérification : res = { box: true/false/null (null : aucune box trouvée), net: true/false } ; renvoie true si l'historique a changé (à écrire)
+function cutStep(c, now, res) {
+  let dirty = false;
+  if (!c.last || now - c.last > CUT_GAP) {  // première vérification ou réveil : nouvelle période surveillée, une coupure ouverte est refermée à la dernière vérification
+    if (c.open) { if (c.open.confirmed) { c.cuts.push({ from: c.open.from, to: c.last, kind: c.open.kind }); } c.open = null; c.fails = 0; dirty = true; }
+    if (c.last) c.wake = now + CUT_WAKE;
+    c.spans.push([now, now]); dirty = true;
+  }
+  const span = c.spans[c.spans.length - 1]; if (now - (c.saved || 0) > 5 * 60000) { dirty = true; c.saved = now; } span[1] = now; c.last = now;
+  if (now < c.wake) { c.state = 'wake'; return dirty; }
+  const ok = res.net, kind = res.box === true ? 'net' : 'box';
+  if (ok) {
+    if (c.open?.confirmed) { c.cuts.push({ from: c.open.from, to: now, kind: c.open.kind }); dirty = true; }
+    c.open = null; c.fails = 0; c.state = 'ok';
+  } else {
+    if (!c.open) c.open = { from: now, kind }; else if (kind === 'box') c.open.kind = 'box';  // la box injoignable même un instant : on le dit
+    if (++c.fails >= 2 && !c.open.confirmed) { c.open.confirmed = true; dirty = true; }
+    c.state = c.open.confirmed ? 'cut-' + c.open.kind : 'doubt';
+  }
+  const old = now - CUT_KEEP; c.cuts = c.cuts.filter(x => x.to > old); c.spans = c.spans.filter(x => x[1] > old);
+  return dirty;
+}
+const gateway = () => run('route', ['print', '-4', '0.0.0.0']).then(o => (/^\s*0\.0\.0\.0\s+0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+)/m.exec(o) || [])[1] || '', () => '');
+const alive = ip => run('ping', ['-n', '1', '-w', '1500', ip]).then(o => parsePing(o, 1).loss === 0, () => false);
+
 module.exports = api => {
+  // la surveillance : l'état vit ici (le volet tourne tant que NeoDex est ouvert, même sans la fenêtre de Réseau)
+  const cut = Object.assign(cutEmpty(), api.readDoc('local-coupures') || {}); cut.open = null; cut.fails = 0; cut.last = 0; cut.wake = 0; cut.state = '';
+  const cutSave = () => api.writeDoc('local-coupures', { on: cut.on, spans: cut.spans, cuts: cut.cuts });
+  let gw = '', gwAt = 0, timer = null, busy = false;
+  const check = async () => {
+    if (busy) return; busy = true;
+    try {
+      if (!gw || Date.now() - gwAt > 5 * 60000) { gw = await gateway(); gwAt = Date.now(); }
+      let box = gw ? await alive(gw) : null;
+      if (box === false || box === null) { gw = await gateway(); gwAt = Date.now(); box = gw ? await alive(gw) : null; }  // changement de réseau : on relit la box
+      const net = await alive('1.1.1.1') || await alive('8.8.8.8');
+      if (cutStep(cut, Date.now(), { box, net })) cutSave();
+      api.emit('cut', cutView());
+    } catch {} finally { busy = false; }
+  };
+  const cutView = () => ({ on: cut.on, spans: cut.spans, cuts: cut.cuts, open: cut.open?.confirmed ? { from: cut.open.from, kind: cut.open.kind } : null, state: cut.state, last: cut.last, every: CUT_EVERY });
+  const cutRun = () => { clearInterval(timer); timer = null; if (cut.on) { timer = setInterval(check, CUT_EVERY); check(); } };
+  cutRun();
+
   const on = (n, f) => api.ipcMain.handle(n, f);
   on('wifi:list', async () => (await exportProfiles()).map(({ name, auth }) => ({ name, auth })));
   on('wifi:key', async (_, name) => { const p = (await exportProfiles(String(name)))[0]; return p ? p.key : ''; });
   on('wifi:copy', async (_, text) => { await api.electron.clipboard.writeText(String(text)); return true; });
+  on('cut:state', () => cutView());
+  on('cut:watch', (_, v) => { cut.on = !!v; if (!cut.on && cut.open?.confirmed) cut.cuts.push({ from: cut.open.from, to: cut.last, kind: cut.open.kind }); if (!cut.on) { cut.open = null; cut.fails = 0; cut.last = 0; cut.state = ''; } cutSave(); cutRun(); return cutView(); });
+  on('cut:clear', () => { Object.assign(cut, cutEmpty(), { on: cut.on }); cutSave(); cutRun(); return cutView(); });
+  on('cut:save', async (_, csv, name) => {  // le relevé en CSV, là où tu veux
+    const r = await api.electron.dialog.showSaveDialog(api.getWin(), { defaultPath: String(name || 'coupures.csv'), filters: [{ name: 'CSV', extensions: ['csv'] }] });
+    if (r.canceled || !r.filePath) return false; fs.writeFileSync(r.filePath, '\ufeff' + String(csv)); return r.filePath;
+  });
   on('net:games', () => ({ list: Object.entries(GAMES).map(([id, g]) => ({ id, name: g.name, info: g.info || '' })), pick: api.readDoc('game')?.id || 'riot' }));
   on('net:test', async (_, gid) => {
     const g = GAMES[gid] ? gid : api.readDoc('game')?.id || 'riot'; api.writeDoc('game', { id: g });
@@ -80,5 +136,6 @@ module.exports = api => {
     if (g === 'riot' && game && game.loss === 100) api.writeDoc('route', {});  // le routeur a changé : le prochain test refait le chemin
     return { box, net, game, gameId: g, gameName: G.name, dns: dnsMs, gw: r.gw || '', gameIp: gameIp || '' };
   });
+  return () => { clearInterval(timer); if (cut.open?.confirmed) { cut.cuts.push({ from: cut.open.from, to: cut.last, kind: cut.open.kind }); cutSave(); } };
 };
-module.exports.parsePing = parsePing; module.exports.inRiot = inRiot; module.exports.GAMES = GAMES;
+module.exports.cutStep = cutStep; module.exports.cutEmpty = cutEmpty; module.exports.parsePing = parsePing; module.exports.inRiot = inRiot; module.exports.GAMES = GAMES;
